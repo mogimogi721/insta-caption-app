@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2f6e4e">
+<title>川西町 投稿アシスタント</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
+<style>
+  :root {
+    --green: #2f6e4e;
+    --green-dark: #1f4f38;
+    --bg: #f6f7f4;
+    --card: #ffffff;
+    --text: #23291f;
+    --muted: #6b7566;
+    --border: #e1e5dc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: white;
+    padding: 28px 20px 22px;
+    border-radius: 0 0 20px 20px;
+  }
+  header h1 { margin: 0 0 4px; font-size: 20px; }
+  header p { margin: 0; font-size: 13px; opacity: 0.9; }
+  main { max-width: 480px; margin: 0 auto; padding: 16px; }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+  }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--green-dark); }
+  input[type=text], textarea, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    margin-bottom: 14px;
+    background: #fafbf9;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  .row2 { display: flex; gap: 10px; }
+  .row2 > div { flex: 1; }
+  #photoLabel {
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    height: 160px;
+    color: var(--muted);
+    cursor: pointer;
+    overflow: hidden;
+    margin-bottom: 14px;
+    position: relative;
+    background: #fafbf9;
+  }
+  #photoLabel img { width: 100%; height: 100%; object-fit: cover; }
+  #photoLabel .placeholder { font-size: 14px; text-align: center; }
+  #photoLabel .placeholder .icon { font-size: 30px; display:block; margin-bottom:6px; }
+  #photoInput { display: none; }
+  button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:disabled { background: #a9c3b4; cursor: not-allowed; }
+  .btn-secondary { background: #eef2ec; color: var(--green-dark); margin-top: 10px; }
+  .btn-secondary:disabled { opacity: 0.5; }
+  #result { display: none; }
+  #captionText {
+    white-space: pre-wrap;
+    background: #fafbf9;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    min-height: 100px;
+  }
+  #captionText[contenteditable="true"]:focus { outline: 2px solid var(--green); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+  .status { font-size: 13px; margin-top: 10px; text-align: center; min-height: 18px; }
+  .status.error { color: #c0392b; }
+  .status.ok { color: var(--green-dark); }
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: -3px; margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌾 川西町 投稿アシスタント</h1>
+  <p>会議名を入力するだけで、Instagram用の説明文とハッシュタグを自動作成</p>
+</header>
+
+<main>
+
+  <div class="card">
+    <label>① 写真(任意・共有時に使います)</label>
+    <label id="photoLabel" for="photoInput">
+      <span class="placeholder"><span class="icon">📷</span>タップして撮影 / 選択</span>
+    </label>
+    <input type="file" id="photoInput" accept="image/*" capture="environment">
+
+    <label for="meetingName">② 会議名・案件名 <span style="color:#c0392b">*</span></label>
+    <input type="text" id="meetingName" placeholder="例:第3回 川西町地域公共交通会議">
+
+    <label for="memo">③ 補足メモ(任意・話した内容や決まったことなど)</label>
+    <textarea id="memo" placeholder="例:デマンド交通の来年度ルート見直しについて協議した"></textarea>
+
+    <div class="row2">
+      <div>
+        <label for="tone">文体</label>
+        <select id="tone">
+          <option value="friendly">親しみやすい</option>
+          <option value="formal">丁寧・公式寄り</option>
+        </select>
+      </div>
+      <div>
+        <label for="hashtagCount">ハッシュタグ数</label>
+        <select id="hashtagCount">
+          <option value="6">6個</option>
+          <option value="8" selected>8個</option>
+          <option value="10">10個</option>
+          <option value="12">12個</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="generateBtn">投稿文を生成する</button>
+    <div class="status" id="genStatus"></div>
+  </div>
+
+  <div class="card" id="result">
+    <label>④ 生成された投稿文(タップして編集できます)</label>
+    <div id="captionText" contenteditable="true"></div>
+    <button class="btn-secondary" id="regenBtn">別の案を再生成</button>
+    <button class="btn-primary" id="shareBtn" style="margin-top:10px;">📋 コピーして写真を共有する</button>
+    <div class="status" id="shareStatus"></div>
+    <div class="hint">
+      ※「共有する」を押すと文章がコピーされ、写真の共有シートが開きます。Instagramを選び、投稿画面のキャプション欄に貼り付けてください。
+    </div>
+  </div>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
