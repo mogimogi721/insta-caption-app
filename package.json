@@ -1,0 +1,16 @@
+{
+  "name": "insta-caption-app",
+  "version": "1.0.0",
+  "description": "会議名と写真からInstagram投稿文・ハッシュタグを自動生成するアプリ(川西町)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5"
+  }
+}
